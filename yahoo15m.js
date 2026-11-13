@@ -40,8 +40,14 @@ async function get15mCandles(symbol = 'AAPL', date) {
       volume: q.volume[i],
     }))
     .filter((c) => c.open != null && c.close != null)
-    // Drop Yahoo's zero-volume closing-price placeholder bar (e.g. 16:00).
-    .filter((c) => !(c.volume === 0 && c.open === c.high && c.high === c.low && c.low === c.close));
+    // Drop Yahoo's zero-volume closing-price placeholder bar (e.g. 16:00 for US stocks).
+    // Only the final bar of a session can be this placeholder; FX always reports volume 0,
+    // so checking every bar would wrongly drop real flat FX candles.
+    .filter((c, i, arr) => {
+      const isLastOfDay = i === arr.length - 1 || arr[i + 1].date !== c.date;
+      const flat = c.open === c.high && c.high === c.low && c.low === c.close;
+      return !(isLastOfDay && c.volume === 0 && flat && result.meta.instrumentType !== 'CURRENCY');
+    });
 
   const day = date ?? candles.at(-1)?.date;
   return { symbol: result.meta.symbol, timezone: tz, day, candles: candles.filter((c) => c.date === day) };
@@ -53,7 +59,9 @@ if (require.main === module) {
   const [symbol, date] = process.argv.slice(2);
   get15mCandles(symbol, date)
     .then(({ symbol, timezone, day, candles }) => {
-      const f = (n) => n.toFixed(2);
+      // FX quotes need more decimals than stocks.
+      const dp = candles.length && candles[0].close < 10 ? 5 : 2;
+      const f = (n) => n.toFixed(dp);
       console.log(`${symbol} — 15-minute candles for ${day} (${timezone}), ${candles.length} bars\n`);
       console.table(
         candles.map((c) => ({ Time: c.time, Open: f(c.open), High: f(c.high), Low: f(c.low), Close: f(c.close), Volume: c.volume }))
