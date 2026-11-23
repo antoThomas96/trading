@@ -10,7 +10,8 @@
 //     if neither is touched, exit at Thursday's close.
 //  6. Cost per trade = spread + slippage on entry + slippage on exit.
 //
-// Usage: node wedThuShort.js <CSV_DIR> [FROM_MONDAY] [CAPITAL_USD] [SPREAD] [SLIP_PER_FILL] [OUT_CSV]
+// Usage: node wedThuShort.js <CSV_DIR> [FROM_MONDAY] [CAPITAL_USD] [SPREAD] [SLIP_PER_FILL] [OUT_CSV] [STOP_R]
+//   STOP_R: stop distance in R (default 1). Use 0 for no stop loss (exit only at target or Thursday close).
 
 const fs = require('fs');
 const path = require('path');
@@ -35,7 +36,7 @@ function loadThursdayMinutes(dir) {
   return out;
 }
 
-function run(dir, from, capital, spread, slip) {
+function run(dir, from, capital, spread, slip, stopR = 1) {
   const cost = spread + 2 * slip;
   const { complete: weeks } = buildWeeks(loadDailyBars(dir), from);
   const thu = loadThursdayMinutes(dir);
@@ -49,18 +50,21 @@ function run(dir, from, capital, spread, slip) {
     const R = (entry - target) / 2;
     const base = { week: w.week, monOpen: w.Mon.open, wedOpen: w.Wed.open, entry, target };
     if (R <= 0) { trades.push({ ...base, result: 'NO TRADE (closed at low)' }); continue; }
-    const stop = entry + R;
+    const stop = stopR > 0 ? entry + stopR * R : Infinity;
     let exit = null, result = 'Thu close', time = '';
     for (const b of thu.get(w.Thu.date) || []) {
       const hitStop = b.high >= stop, hitTarget = b.low <= target;
       if (hitStop) { exit = stop; result = 'STOP (-1R)'; time = b.ny; break; }
-      if (hitTarget) { exit = target; result = 'TARGET (+2R)'; time = b.ny; break; }
+      if (hitTarget) { exit = target; result = stopR > 0 ? 'TARGET (+2R)' : 'TARGET (Wed low)'; time = b.ny; break; }
     }
     if (exit == null) exit = w.Thu.close;
     const gross = (entry - exit) / PIP; // short
     const net = gross - cost;
     const units = capital / entry; // EUR bought/sold with the capital
-    trades.push({ ...base, stop, R_pips: R / PIP, exit, result, nyTime: time, gross, net, usd: units * net * PIP });
+    // Worst point against the short before exit (max adverse excursion), in pips
+    let mae = 0;
+    for (const b of thu.get(w.Thu.date) || []) { mae = Math.max(mae, (b.high - entry) / PIP); if (time && b.ny === time) break; }
+    trades.push({ ...base, stop: Number.isFinite(stop) ? stop : null, maePips: mae, R_pips: R / PIP, exit, result, nyTime: time, gross, net, usd: units * net * PIP });
   }
   return { weeks: weeks.length, filtered, trades, cost };
 }
@@ -68,10 +72,10 @@ function run(dir, from, capital, spread, slip) {
 function report(label, { weeks, filtered, trades, cost }, capital) {
   const t = trades.filter((x) => x.usd != null);
   const sum = (a) => a.reduce((s, x) => s + x, 0);
-  const cnt = (r) => t.filter((x) => x.result === r).length;
+  const cnt = (r) => t.filter((x) => x.result.startsWith(r)).length;
   const usd = t.map((x) => x.usd).sort((a, b) => b - a);
   console.log(`\n=== ${label}: ${weeks} weeks, ${filtered} passed the Wed-open filter, ${t.length} trades (cost ${cost} pips) ===`);
-  console.log(`Target hit: ${cnt('TARGET (+2R)')} | Stop hit: ${cnt('STOP (-1R)')} | Closed at Thu close: ${cnt('Thu close')} | No trade: ${trades.length - t.length}`);
+  console.log(`Target hit: ${cnt('TARGET')} | Stop hit: ${cnt('STOP')} | Closed at Thu close: ${cnt('Thu close')} | No trade: ${trades.length - t.length}`);
   console.log(`Avg R = ${(sum(t.map((x) => x.R_pips)) / t.length).toFixed(1)} pips | Profitable trades: ${t.filter((x) => x.usd > 0).length}`);
   console.log(`Gross pips ${sum(t.map((x) => x.gross)).toFixed(1)} | Net pips ${sum(t.map((x) => x.net)).toFixed(1)} | ` +
     `Net USD on $${capital.toLocaleString()}: ${Math.round(sum(usd)).toLocaleString()} (${((100 * sum(usd)) / capital).toFixed(2)}%)`);
@@ -79,16 +83,16 @@ function report(label, { weeks, filtered, trades, cost }, capital) {
 }
 
 if (require.main === module) {
-  const [dir, from = '2025-11-10', cap = '180000', spread = '0.8', slip = '1', outCsv] = process.argv.slice(2);
-  const res = run(dir, from, +cap, +spread, +slip);
+  const [dir, from = '2025-11-10', cap = '180000', spread = '0.8', slip = '1', outCsv, stopR = '1'] = process.argv.slice(2);
+  const res = run(dir, from, +cap, +spread, +slip, +stopR);
   report(`From ${from}`, res, +cap);
   if (outCsv) {
     const f5 = (x) => (x == null ? '' : x.toFixed(5));
     const f1 = (x) => (x == null ? '' : (Math.round(x * 10) / 10 + 0).toFixed(1));
-    const lines = ['week_monday,mon_open,wed_open,entry_wed_close,target_wed_low,stop,R_pips,exit,result,exit_time_ny,gross_pips,net_pips,net_usd'];
+    const lines = ['week_monday,mon_open,wed_open,entry_wed_close,target_wed_low,stop,R_pips,exit,result,exit_time_ny,worst_against_pips,gross_pips,net_pips,net_usd'];
     for (const x of res.trades) {
       lines.push([x.week, f5(x.monOpen), f5(x.wedOpen), f5(x.entry), f5(x.target), f5(x.stop), f1(x.R_pips), f5(x.exit),
-        x.result, x.nyTime || '', f1(x.gross), f1(x.net), x.usd == null ? '' : Math.round(x.usd)].join(','));
+        x.result, x.nyTime || '', f1(x.maePips), f1(x.gross), f1(x.net), x.usd == null ? '' : Math.round(x.usd)].join(','));
     }
     fs.writeFileSync(outCsv, lines.join('\n') + '\n');
     console.log(`Trade list written to ${outCsv}`);
