@@ -48,8 +48,14 @@ def us_summer(day):
 
 
 # ---------- loading ----------
-def load(csv_dir, tz_mode="measured"):
-    """Return dict of numpy arrays: ts (UTC epoch s), o, h, l, c, tday (trading-day ordinal), wd (0=Mon)."""
+# Data-quality exclusions found by the audit (file-clock dates, inclusive start, exclusive end).
+# Feb-Jul 2023: 27-29% of minutes missing in repeating one-hour holes.
+EXCLUDE = [("20230201", "20230801")]
+
+
+def load(csv_dir, tz_mode="measured", exclude=EXCLUDE):
+    """Return dict of numpy arrays: ts (UTC epoch s), o, h, l, c, tday (trading-day ordinal), wd (0=Mon).
+    Duplicate timestamps are removed (first occurrence kept) and EXCLUDE ranges are dropped."""
     rows = []
     for f in sorted(glob.glob(os.path.join(csv_dir, "DAT_ASCII_EURUSD_M1_*.csv"))):
         with open(f) as fh:
@@ -57,8 +63,17 @@ def load(csv_dir, tz_mode="measured"):
                 p = line.rstrip().split(";")
                 if len(p) < 5 or len(p[0]) != 15:
                     continue
+                if any(a <= p[0][:8] < b for a, b in exclude):
+                    continue
                 rows.append((p[0], float(p[1]), float(p[2]), float(p[3]), float(p[4])))
-    rows.sort(key=lambda r: r[0])
+    rows.sort(key=lambda r: r[0])  # stable: first occurrence of a duplicate stays first
+    deduped, seen = [], set()
+    for r in rows:
+        if r[0] in seen:
+            continue
+        seen.add(r[0]); deduped.append(r)
+    n_dupes = len(rows) - len(deduped)
+    rows = deduped
     n = len(rows)
     ts = np.empty(n, dtype=np.int64)
     offset_cache = {}
@@ -102,6 +117,7 @@ def load(csv_dir, tz_mode="measured"):
     out = dict(ts=ts[m], o=o[m], h=h[m], l=l[m], c=c[m], tday=tday[m])
     out["wd"] = np.array([dt.date.fromordinal(int(x)).weekday() for x in out["tday"]])
     out["dropped"] = int((~keep).sum())
+    out["duplicates_removed"] = n_dupes
     return out
 
 

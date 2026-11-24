@@ -1,29 +1,30 @@
-=== tz mode: measured | bars kept 1,383,422 | bars dropped outside FX week 0 | cost 0.8 pips round trip
+=== tz mode: measured | bars kept 1,247,253 | bars dropped outside FX week 0 | duplicates removed 128 | cost 0.8 pips round trip
+    excluded (data holes): 20230201..20230801
     data 2023-01-01 22:04:00 -> 2026-11-06 21:58:00 UTC
 
 NULL CONTROL  long Tue 10:00 UTC, hold 24 x 1-min bars, no stops
-   trades 192 | ambiguous bars 0 | targets 0 stops 0 time 192 | win 41.1% (break-even n/a) | avg -1.429 pips t=-3.77 | halves -75.7/-198.6 | net -274.3 pips
-   gross (before cost): up 46.4% / down 52.6% / flat 1.0%, avg -0.629 pips
-   expected avg -0.8 pips: observed -1.429, which is -1.66 standard errors from -0.8  ->  OK (within 2 SE)
+   trades 176 | ambiguous bars 0 | targets 0 stops 0 time 176 | win 39.8% (break-even n/a) | avg -1.587 pips t=-3.98 | halves -92.2/-187.1 | net -279.3 pips
+   gross (before cost): up 44.9% / down 54.0% / flat 1.1%, avg -0.787 pips
+   expected avg -0.8 pips: observed -1.587, which is -1.97 standard errors from -0.8  ->  OK (within 2 SE)
 
 STRATEGY  Wed open < Mon open -> SHORT at Thursday's first-bar open; manage to Thursday close
-   qualifying weeks: 94 (2023-01-05 .. 2026-10-29)
+   qualifying weeks: 80 (2023-01-05 .. 2026-10-29)
 
-   note: 9 setups have R < 2 pips (Wednesday closed within 4 pips of its low); the 0.8-pip cost alone is > 0.4R on those
+   note: 6 setups have R < 2 pips (Wednesday closed within 4 pips of its low); the 0.8-pip cost alone is > 0.4R on those
 
 (a) Target = Wednesday low (2R), stop = k x R   [your last version is k = 2]
-   k=0.5 PESSIMISTIC trades 92 | ambiguous bars 0 | targets 8 stops 81 time 3 | win 12.0% (break-even 27.9%) | avg -0.873R t=-4.79 | halves -43.9/-36.5 | net -262.8 pips
-         OPTIMISTIC  trades 92 | ambiguous bars 0 | targets 8 stops 81 time 3 | win 12.0% (break-even 27.9%) | avg -0.873R t=-4.79 | halves -43.9/-36.5 | net -262.8 pips
-   k=1   PESSIMISTIC trades 92 | ambiguous bars 0 | targets 20 stops 59 time 13 | win 32.6% (break-even 39.9%) | avg -0.310R t=-2.09 | halves -8.9/-19.7 | net +208.1 pips
-         OPTIMISTIC  trades 92 | ambiguous bars 0 | targets 20 stops 59 time 13 | win 32.6% (break-even 39.9%) | avg -0.310R t=-2.09 | halves -8.9/-19.7 | net +208.1 pips
-   k=1.5 PESSIMISTIC trades 92 | ambiguous bars 0 | targets 28 stops 47 time 17 | win 43.5% (break-even 48.5%) | avg -0.166R t=-1.37 | halves -5.1/-10.2 | net +333.3 pips
-         OPTIMISTIC  trades 92 | ambiguous bars 0 | targets 28 stops 47 time 17 | win 43.5% (break-even 48.5%) | avg -0.166R t=-1.37 | halves -5.1/-10.2 | net +333.3 pips
-   k=2   PESSIMISTIC trades 92 | ambiguous bars 0 | targets 30 stops 40 time 22 | win 45.7% (break-even 54.9%) | avg -0.193R t=-1.87 | halves -6.8/-10.9 | net +276.5 pips
-         OPTIMISTIC  trades 92 | ambiguous bars 0 | targets 30 stops 40 time 22 | win 45.7% (break-even 54.9%) | avg -0.193R t=-1.87 | halves -6.8/-10.9 | net +276.5 pips
-   k=3   PESSIMISTIC trades 92 | ambiguous bars 0 | targets 36 stops 29 time 27 | win 53.3% (break-even 63.9%) | avg -0.122R t=-1.48 | halves -5.2/-6.0 | net +382.4 pips
-         OPTIMISTIC  trades 92 | ambiguous bars 0 | targets 36 stops 29 time 27 | win 53.3% (break-even 63.9%) | avg -0.122R t=-1.48 | halves -5.2/-6.0 | net +382.4 pips
-   k=4   PESSIMISTIC trades 92 | ambiguous bars 0 | targets 40 stops 22 time 30 | win 57.6% (break-even 70.0%) | avg -0.096R t=-1.39 | halves -4.2/-4.7 | net +294.2 pips
-         OPTIMISTIC  trades 92 | ambiguous bars 0 | targets 40 stops 22 time 30 | win 57.6% (break-even 70.0%) | avg -0.096R t=-1.39 | halves -4.2/-4.7 | net +294.2 pips
+   k=0.5 PESSIMISTIC trades 78 | ambiguous bars 0 | targets 8 stops 67 time 3 | win 14.1% (break-even 26.5%) | avg -0.710R t=-3.56 | halves -27.6/-27.8 | net -115.3 pips
+         OPTIMISTIC  trades 78 | ambiguous bars 0 | targets 8 stops 67 time 3 | win 14.1% (break-even 26.5%) | avg -0.710R t=-3.56 | halves -27.6/-27.8 | net -115.3 pips
+   k=1   PESSIMISTIC trades 78 | ambiguous bars 0 | targets 18 stops 50 time 10 | win 32.1% (break-even 38.7%) | avg -0.260R t=-1.64 | halves -5.4/-14.8 | net +68.2 pips
+         OPTIMISTIC  trades 78 | ambiguous bars 0 | targets 18 stops 50 time 10 | win 32.1% (break-even 38.7%) | avg -0.260R t=-1.64 | halves -5.4/-14.8 | net +68.2 pips
+   k=1.5 PESSIMISTIC trades 78 | ambiguous bars 0 | targets 25 stops 39 time 14 | win 43.6% (break-even 47.5%) | avg -0.117R t=-0.90 | halves -4.1/-5.0 | net +197.2 pips
+         OPTIMISTIC  trades 78 | ambiguous bars 0 | targets 25 stops 39 time 14 | win 43.6% (break-even 47.5%) | avg -0.117R t=-0.90 | halves -4.1/-5.0 | net +197.2 pips
+   k=2   PESSIMISTIC trades 78 | ambiguous bars 0 | targets 27 stops 32 time 19 | win 46.2% (break-even 54.1%) | avg -0.142R t=-1.30 | halves -5.6/-5.5 | net +173.0 pips
+         OPTIMISTIC  trades 78 | ambiguous bars 0 | targets 27 stops 32 time 19 | win 46.2% (break-even 54.1%) | avg -0.142R t=-1.30 | halves -5.6/-5.5 | net +173.0 pips
+   k=3   PESSIMISTIC trades 78 | ambiguous bars 0 | targets 32 stops 23 time 23 | win 53.8% (break-even 63.2%) | avg -0.082R t=-0.95 | halves -2.8/-3.6 | net +196.6 pips
+         OPTIMISTIC  trades 78 | ambiguous bars 0 | targets 32 stops 23 time 23 | win 53.8% (break-even 63.2%) | avg -0.082R t=-0.95 | halves -2.8/-3.6 | net +196.6 pips
+   k=4   PESSIMISTIC trades 78 | ambiguous bars 0 | targets 35 stops 17 time 26 | win 57.7% (break-even 69.4%) | avg -0.067R t=-0.93 | halves -3.0/-2.2 | net +129.9 pips
+         OPTIMISTIC  trades 78 | ambiguous bars 0 | targets 35 stops 17 time 26 | win 57.7% (break-even 69.4%) | avg -0.067R t=-0.93 | halves -3.0/-2.2 | net +129.9 pips
 
 (b) Fixed stop/target grid (pips). Break-even win rate = (stop + cost) / (stop + target):
    stop\tgt        5      10      15      20      30      40      60
@@ -36,12 +37,12 @@ STRATEGY  Wed open < Mon open -> SHORT at Thursday's first-bar open; manage to T
 
    trades (pessimistic)
    stop\tgt        5      10      15      20      30      40      60
-          5       94      94      94      94      94      94      94
-         10       94      94      94      94      94      94      94
-         15       94      94      94      94      94      94      94
-         20       94      94      94      94      94      94      94
-         30       94      94      94      94      94      94      94
-         40       94      94      94      94      94      94      94
+          5       80      80      80      80      80      80      80
+         10       80      80      80      80      80      80      80
+         15       80      80      80      80      80      80      80
+         20       80      80      80      80      80      80      80
+         30       80      80      80      80      80      80      80
+         40       80      80      80      80      80      80      80
 
    ambiguous bars (stop & target in same minute)
    stop\tgt        5      10      15      20      30      40      60
@@ -54,51 +55,51 @@ STRATEGY  Wed open < Mon open -> SHORT at Thursday's first-bar open; manage to T
 
    win rate, PESSIMISTIC
    stop\tgt        5      10      15      20      30      40      60
-          5      37%     16%     12%      9%      4%      3%      3%
-         10      56%     37%     29%     26%     19%     15%     14%
-         15      68%     50%     41%     38%     32%     27%     26%
-         20      73%     57%     50%     47%     40%     33%     32%
-         30      81%     69%     63%     59%     51%     44%     41%
-         40      85%     74%     68%     65%     57%     50%     48%
+          5      38%     18%     12%     10%      5%      4%      4%
+         10      60%     41%     31%     29%     21%     16%     15%
+         15      71%     54%     44%     41%     35%     29%     28%
+         20      78%     62%     54%     51%     45%     36%     35%
+         30      84%     71%     64%     61%     55%     46%     44%
+         40      88%     76%     69%     68%     61%     52%     50%
 
    t-statistic of avg R, PESSIMISTIC
    stop\tgt        5      10      15      20      30      40      60
-          5    -4.14   -5.98   -5.19   -5.08   -5.88   -5.32   -5.88
-         10    -3.04   -3.34   -3.09   -2.32   -1.92   -2.36   -2.07
-         15    -2.26   -2.55   -2.19   -1.36   -0.63   -1.11   -0.86
-         20    -2.14   -2.32   -1.82   -1.00   -0.25   -1.17   -0.87
-         30    -1.75   -1.64   -0.98   -0.46   +0.30   -0.46   -0.50
-         40    -1.38   -1.31   -0.67   -0.02   +0.69   -0.11   -0.05
+          5    -3.76   -4.95   -4.43   -3.91   -4.72   -4.28   -4.79
+         10    -2.18   -2.30   -2.29   -1.42   -1.25   -1.82   -1.47
+         15    -1.52   -1.68   -1.60   -0.70   +0.02   -0.64   -0.45
+         20    -1.21   -1.25   -1.01   -0.13   +0.60   -0.51   -0.29
+         30    -1.02   -1.13   -0.70   +0.10   +0.88   -0.09   -0.09
+         40    -0.68   -0.81   -0.39   +0.51   +1.21   +0.18   +0.23
 
    net pips, PESSIMISTIC
    stop\tgt        5      10      15      20      30      40      60
-          5     -195    -320    -325    -345    -405    -410    -436
-         10     -220    -315    -340    -295    -295    -380    -376
-         15     -205    -310    -315    -225    -128    -243    -211
-         20     -230    -335    -310    -195     -58    -291    -242
-         30     -235    -295    -205    -110     +85    -142    -164
-         40     -209    -268    -158      -5    +208     -37     -16
+          5     -164    -254    -264    -264    -324    -329    -355
+         10     -144    -204    -239    -174    -184    -279    -261
+         15     -124    -189    -214    -109      +3    -132    -105
+         20     -114    -164    -159     -24    +133    -120     -77
+         30     -119    -184    -134     +21    +228     -25     -27
+         40      -88    -147     -82    +121    +336     +55     +76
 
    net pips, OPTIMISTIC
    stop\tgt        5      10      15      20      30      40      60
-          5     -195    -320    -325    -345    -405    -410    -436
-         10     -220    -315    -340    -295    -295    -380    -376
-         15     -205    -310    -315    -225    -128    -243    -211
-         20     -230    -335    -275    -195     -58    -291    -242
-         30     -235    -295    -205    -110     +85    -142    -164
-         40     -209    -268    -158      -5    +208     -37     -16
+          5     -164    -254    -264    -264    -324    -329    -355
+         10     -144    -204    -239    -174    -184    -279    -261
+         15     -124    -189    -214    -109      +3    -132    -105
+         20     -114    -164    -124     -24    +133    -120     -77
+         30     -119    -184    -134     +21    +228     -25     -27
+         40      -88    -147     -82    +121    +336     +55     +76
 
    avg R, PESSIMISTIC
    stop\tgt        5      10      15      20      30      40      60
-          5   -0.415  -0.681  -0.692  -0.734  -0.862  -0.873  -0.928
-         10   -0.234  -0.335  -0.362  -0.314  -0.314  -0.404  -0.400
-         15   -0.146  -0.220  -0.224  -0.160  -0.091  -0.173  -0.150
-         20   -0.122  -0.178  -0.165  -0.104  -0.031  -0.155  -0.129
-         30   -0.083  -0.105  -0.073  -0.039  +0.030  -0.050  -0.058
-         40   -0.056  -0.071  -0.042  -0.001  +0.055  -0.010  -0.004
+          5   -0.410  -0.635  -0.660  -0.660  -0.810  -0.822  -0.888
+         10   -0.180  -0.255  -0.299  -0.217  -0.230  -0.349  -0.326
+         15   -0.103  -0.158  -0.178  -0.091  +0.003  -0.110  -0.088
+         20   -0.071  -0.103  -0.099  -0.015  +0.083  -0.075  -0.048
+         30   -0.050  -0.077  -0.056  +0.009  +0.095  -0.010  -0.011
+         40   -0.027  -0.046  -0.026  +0.038  +0.105  +0.017  +0.024
 
-   cells with avg R > 0 on pessimistic: 2 of 42
-   best pessimistic cell: stop 40 / target 30: trades 94 | ambiguous bars 0 | targets 49 stops 27 time 18 | win 57.4% (break-even 58.3%) | avg +0.055R t=+0.69 | halves -0.9/+6.1 | net +208.1 pips
+   cells with avg R > 0 on pessimistic: 8 of 42
+   best pessimistic cell: stop 40 / target 30: trades 80 | ambiguous bars 0 | targets 44 stops 21 time 15 | win 61.3% (break-even 58.3%) | avg +0.105R t=+1.21 | halves +0.8/+7.5 | net +335.8 pips
    its 5 neighbours all positive (plateau)? False
 
 PASS MARK
@@ -112,5 +113,5 @@ PASS MARK
       [x] n >= 30
       [x] positive on pessimistic (avg R > 0)
       [ ] |t| >= 2
-      [ ] both halves positive
+      [x] both halves positive
       [ ] plateau in grid

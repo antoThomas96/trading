@@ -11,7 +11,8 @@ CSV, TZ = sys.argv[1], (sys.argv[2] if len(sys.argv) > 2 else "measured")
 COST = float(sys.argv[3]) if len(sys.argv) > 3 else 0.8
 d = E.load(CSV, TZ)
 N = len(d["ts"])
-print(f"=== tz mode: {TZ} | bars kept {N:,} | bars dropped outside FX week {d['dropped']:,} | cost {COST} pips round trip")
+print(f"=== tz mode: {TZ} | bars kept {N:,} | bars dropped outside FX week {d['dropped']:,} | duplicates removed {d['duplicates_removed']} | cost {COST} pips round trip")
+print(f"    excluded (data holes): {', '.join(a + '..' + b for a, b in E.EXCLUDE)}")
 print(f"    data {E.utc(d['ts'][0])} -> {E.utc(d['ts'][-1])} UTC\n")
 
 
